@@ -1,0 +1,29 @@
+---
+- name: Create directory for docker-compose project
+  file:
+    path: /docker-compose
+    state: directory
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy docker-compose file
+  copy:
+    src: docker-compose.yml
+    dest: /docker-compose
+
+- name: Copy vpn.env file
+  copy:
+    src: vpn.env
+    dest: /docker-compose
+
+- name: Start VPN server with docker-compose
+  command: docker-compose -f /docker-compose/docker-compose.yml up -d
+
+- name: Get IPSEC-key and password
+  command: docker exec -it ipsec-vpn-server cat /etc/ipsec.d/vpn-gen.env
+  register: ipsec_output
+
+- name: Show IPSEC-key and password
+  debug:
+    var: ipsec_output.stdout_lines

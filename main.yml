@@ -1,0 +1,20 @@
+---
+- name: Install and config VPN-server
+  hosts: all
+  become: true
+  roles:
+    - add-users
+    - docker-install
+    - ipsec-vpn-server-install
+  #    - basics-security
+  vars:
+    vpn_user: "{{ vpn_user }}"
+    users_users:
+      - user: "{{ vpn_user }}"
+        name: "VPN admin"
+        key: "{{ ssh_key }}"
+    users_global_admin_users:
+      - "{{ vpn_user }}"
+    security_ssh_port: "{{ security_ssh_port }}"
+    security_ssh_allowed_users: ["{{ vpn_user }}"]
+    security_sudoers_passwordless: ["{{ vpn_user }}"]

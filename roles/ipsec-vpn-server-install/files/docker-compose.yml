@@ -1,0 +1,25 @@
+version: '3'
+
+networks:
+  vpn_network:
+    driver: bridge
+
+volumes:
+  ikev2-vpn-data: {}
+
+services:
+  ipsec-vpn-server:
+    image: hwdsl2/ipsec-vpn-server
+    container_name: ipsec-vpn-server
+    privileged: true
+    volumes:
+      - ikev2-vpn-data:/etc/ipsec.d
+      - /lib/modules:/lib/modules:ro
+    env_file:
+      - ./vpn.env
+    ports:
+      - '500:500/udp'
+      - '4500:4500/udp'
+    restart: unless-stopped
+    networks:
+      - vpn_network
